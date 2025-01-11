@@ -1,5 +1,5 @@
 package com.dyalex.personalfinancemephi.model;
 
-public enum BudgetType {
+public enum TransactionType {
     INCOME, EXPENSE, OTHER
 }

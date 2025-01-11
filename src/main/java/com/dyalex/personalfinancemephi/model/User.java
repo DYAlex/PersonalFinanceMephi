@@ -18,7 +18,12 @@ public class User {
 
     private String username;
 
+    @Transient
     private String password;
+
+    private String hash;
+
+    private String salt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wallet> wallets;

@@ -20,5 +20,5 @@ public class Category {
 
     private String name;
 
-    private BudgetType type;
+    private TransactionType type;
 }
