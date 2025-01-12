@@ -3,6 +3,7 @@ package com.dyalex.personalfinancemephi.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -11,10 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "wallets")
-public class Wallet {
+public class Wallet implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

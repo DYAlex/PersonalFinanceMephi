@@ -10,6 +10,7 @@ CREATE TABLE wallets
 (
     id      SERIAL PRIMARY KEY,
     user_id bigint NOT NULL,
+    name varchar NOT NULL,
     balance float8 default 0.0,
     CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users (id)
 );
