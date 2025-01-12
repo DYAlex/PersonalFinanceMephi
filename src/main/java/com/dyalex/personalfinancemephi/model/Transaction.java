@@ -1,5 +1,6 @@
 package com.dyalex.personalfinancemephi.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonFormat(pattern = ("yyyy/MM/dd HH:mm:ss"))
     private LocalDateTime date;
 
     private BigDecimal amount;

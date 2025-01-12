@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: PersonalFinanceMephi
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: secret
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        hbm2ddl:
+          schema-generation:
+            scripts:
+              action: update
+              create-target: src/main/resources/schema.sql
+            create-source: metadata
+            output-to-script: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+logging:
+  level:
+    org:
+      hibernate: DEBUG
+      springframework:
+        orm:
+          jpa: DEBUG

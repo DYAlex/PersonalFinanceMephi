@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Личные финансы</title>
+</head>
+<body>
+<div>
+    <form th:action="@{/registration}" method="post" th:object="${userForm}">
+        <h2>Регистрация</h2>
+        <div>
+            <label for="username">Имя пользователя: </label>
+            <input type="text" name="username" id="username" placeholder="Имя пользователя" autofocus />
+            <p th:if="${usernameError}" th:text="${usernameError}">${usernameError}</p>
+        </div>
+        <div>
+            <label for="password">Пароль: </label>
+            <input type="password" name="password" id="password" placeholder="Pa$$word" />
+        </div>
+        <div>
+            <label for="confirmPassword">Подтверждение пароля: </label>
+            <input type="password" name="passwordConfirm" id="confirmPassword" placeholder="Pa$$word" />
+            <p th:if="${passwordError}" th:text="${passwordError}">${passwordError}</p>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <a href="/">Главная</a>
+</div>
+</body>
+</html>

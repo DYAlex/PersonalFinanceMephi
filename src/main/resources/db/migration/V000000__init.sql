@@ -2,8 +2,8 @@ CREATE TABLE users
 (
     id       SERIAL PRIMARY KEY,
     username varchar NOT NULL,
-    hash     varchar NOT NULL,
-    salt     varchar NOT NULL
+    role varchar NOT NULL,
+    password     varchar NOT NULL
 );
 
 CREATE TABLE wallets
