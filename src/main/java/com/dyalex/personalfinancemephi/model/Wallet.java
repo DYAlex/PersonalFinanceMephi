@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -23,7 +25,10 @@ public class Wallet implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private Double balance;
+    private BigDecimal balance;
+
+    @Transient
+    private Boolean inBound;
 
     @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Limit> limits;

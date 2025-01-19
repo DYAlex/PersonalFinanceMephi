@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Добавить расход</title>
+  <title>Добавить приход</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/style.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -23,13 +23,12 @@
 </head>
 <body>
 <div class="container">
-  <h1 class="mt-5 form-heading">Добавить расход</h1>
+  <h1 class="mt-5 form-heading">Добавить приход</h1>
 
   <div th:if="${walletError != null && !walletError.isBlank()}" th:text="${walletError}" class="alert alert-warning" role="alert"></div>
   <div th:if="${categoryError != null && !categoryError.isBlank()}" th:text="${categoryError}" class="alert alert-warning" role="alert"></div>
-  <div th:if="${limitWarning != null && !limitWarning.isBlank()}" th:text="${limitWarning}" class="alert alert-warning" role="alert"></div>
 
-  <form action="#" th:action="@{/saveExpense}" th:object="${expense}" method="post" class="mt-3">
+  <form action="#" th:action="@{/saveIncome}" th:object="${income}" method="post" class="mt-3">
     <div class="form-group">
       <p>Кошелек:</p>
       <div th:each="wallet : ${wallets}" >
@@ -50,7 +49,7 @@
     </div>
     <div class="form-group">
       <label for="date">Дата:</label>
-      <input type="date" id="date" name="date" th:field="*{date}" th:value="*{date}" class="form-control">
+      <input type="date" id="date" name="date" th:field="*{date}" class="form-control">
     </div>
     <button type="submit" class="btn btn-success">Сохранить</button>
   </form>

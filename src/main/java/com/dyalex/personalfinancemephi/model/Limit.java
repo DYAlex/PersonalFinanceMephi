@@ -1,15 +1,14 @@
 package com.dyalex.personalfinancemephi.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -26,5 +25,11 @@ public class Limit implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     private Category category;
 
-    private Double value;
+    private BigDecimal value;
+
+    @Transient
+    private Boolean inBound;
+
+    @Transient
+    private BigDecimal balance;
 }

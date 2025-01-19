@@ -26,25 +26,147 @@
 <div class="container">
     <h1 class="mt-5">Личные финансы</h1>
     <div class="row">
-        <h3>Кошельки</h3>
-        <p><a class="btn btn-primary btn-sm" th:href="@{/addWallet}">
-            <i class="fa-solid fa-plus"></i>
-        </a>
-        </p>
-        <br />
-        <div class="col-md-6" th:each="wallet : ${wallets}">
-            <div class="card" th:text="${wallet.name}"></div>
-            <div class="card" th:text="${wallet.balance}"></div>
-            <div class="card" th:each=" limit : ${wallet.limits}">
-                <div class="card-body" th:text="${limit.category}"></div>
-                <div class="card-body" th:text="${limit.value}"></div>
+        <div th:if="${categoriesError != null && !categoriesError.isBlank()}" th:text="${categoriesError}" class="alert alert-warning" role="alert"></div>
+        <form action="#" th:action="@{/display}" th:object="${financeFilter}" method="POST">
+            <div class="container">
+                <div><strong>Выберите кошелек (Multiple):</strong>
+                    <select id="multiple-hobbies" th:field="${financeFilter.wallets}" multiple="multiple">
+
+                        <option th:each="wallet : ${wallets}"
+                                th:value="${wallet.id}" th:text="${wallet.name}"></option>
+                    </select>
+                </div>
+                <div><strong>Выберите категорию (Multiple):</strong>
+                    <select id="multiple-categories" th:field="${financeFilter.categories}" multiple="multiple">
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}" th:text="${category.name}"></option>
+                        <option value="7" th:text="'test category'"></option>
+                    </select>
+                </div>
+                <input type="submit" value="Фильтровать" class="btn btn-primary"/>
             </div>
-            <p><a class="btn btn-primary btn-sm" th:href="@{/editWallet/{id}(id=${wallet.id})}">
-                <i class="fas fa-pencil-alt"></i>
-            </a>
+        </form>
+    </div>
+    <div class="container">
+        <div class="row">
+            <h3>Кошельки</h3>
+            <p><a class="btn btn-primary btn-sm" th:href="@{/addWallet}">
+                <i class="fas fa-plus"></i></a>
             </p>
+            <div class="col-md-6" th:text="'Общая сумма: ' + ${balance}"></div>
+            <br/>
+            <div class="col-md-6" th:each="wallet : ${wallets}">
+                <div class="container">
+                    <div th:text="${wallet.name}"></div>
+                    <div th:text="${wallet.balance}"></div>
+                    <p><a class="btn btn-primary btn-sm" th:href="@{/editWallet/{id}(id=${wallet.id})}">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                        <a class="btn btn-danger btn-sm" th:href="@{/deleteWallet/{id}(id=${wallet.id})}"
+                           onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </p>
+                    <div th:if="${wallet.inBound != null && !wallet.inBound}" th:text="'В кошельке ' + ${wallet.name} + ' расходы превышают доходы!'" class="alert alert-warning" role="alert"></div>
+                </div>
+                <div class="card text-white bg-dark mb-3"
+                     th:each=" limit : ${wallet.limits}"
+                     th:object="${limit}"
+                     th:if="${limit.category.type.name} == 'EXPENSE'">
+
+                    <div th:if="${limit.inBound != null && !limit.inBound}" th:text="'По категории ' + ${limit.category.name} + ' превышен установленный лимит!'" class="alert alert-warning" role="alert"></div>
+                    <div class="card-body">
+                        <div class="card-text" th:text="${limit.category.name}"></div>
+                        <div class="card-text" th:text="'Лимит: ' + ${limit.value}"></div>
+                        <div class="card-text" th:text="'Остаток: ' + ${limit.balance}"></div>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-primary btn-sm" th:href="@{/editLimit/{id}(id=${limit.id})}">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a class="btn btn-danger btn-sm" th:href="@{/deleteLimit/{id}(id=${limit.id})}"
+                           onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h3>Категории</h3>
+            <p><a class="btn btn-primary btn-sm" th:href="@{/addCategory}">
+                <i class="fas fa-plus"></i></a>
+            </p>
+            <br/>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <div>Доходы:</div>
+                    <div class="col-md-6"
+                         th:each="category : ${categories}"
+                         th:object="${category}"
+                         th:if="${category.type.name()} == 'INCOME'">
+                        <div th:text="${category.name}"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>Расходы:</div>
+                    <div class="col-md-6"
+                         th:each="category : ${categories}"
+                         th:object="${category}"
+                         th:if="${category.type.name} == 'EXPENSE'">
+                        <div th:text="${category.name}"></div>
+                        <a class="btn btn-primary btn-sm" th:href="@{/addLimit/{id}(id=${category.id})}">
+                            <span>Установить лимит</span>
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>Прочее:</div>
+                    <div class="col-md-6"
+                         th:each="category : ${categories}"
+                         th:object="${category}"
+                         th:if="${category.type.name} == 'OTHER'">
+                        <div th:text="${category.name}"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <h2>Общая сумма доходов: <span th:text="${totalIncome}">0.00</span></h2>
+    <table class="table table-striped mt-3">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Кошелек</th>
+            <th>Категория</th>
+            <th>Сумма</th>
+            <th>Дата</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="inc : ${income}">
+            <td th:text="${inc.id}">1</td>
+            <td th:text="${inc.wallet.name}">Кошелек</td>
+            <td th:text="${inc.category.name}">Категория</td>
+            <td th:text="${inc.amount}">Сумма</td>
+            <td th:text="${inc.date}">Дата</td>
+            <td>
+                <a class="btn btn-primary btn-sm" th:href="@{/editIncome/{id}(id=${inc.id})}">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+                <a class="btn btn-danger btn-sm" th:href="@{/deleteTransaction/{id}(id=${inc.id})}"
+                   onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a class="btn btn-success mt-3" href="/addIncome">Добавить приход</a>
     <table class="table table-striped mt-3">
         <thead>
         <tr>
@@ -59,15 +181,15 @@
         <tbody>
         <tr th:each="expense : ${expenses}">
             <td th:text="${expense.id}">1</td>
-            <td th:text="${expense.wallet}">Кошелек</td>
-            <td th:text="${expense.category}">Категория</td>
+            <td th:text="${expense.wallet.name}">Кошелек</td>
+            <td th:text="${expense.category.name}">Категория</td>
             <td th:text="${expense.amount}">Сумма</td>
             <td th:text="${expense.date}">Дата</td>
             <td>
                 <a class="btn btn-primary btn-sm" th:href="@{/editExpense/{id}(id=${expense.id})}">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
-                <a class="btn btn-danger btn-sm" th:href="@{/deleteExpense/{id}(id=${expense.id})}"
+                <a class="btn btn-danger btn-sm" th:href="@{/deleteTransaction/{id}(id=${expense.id})}"
                    onclick="return confirm('Вы уверены, что хотите удалить запись?');">
                     <i class="fas fa-trash-alt"></i>
                 </a>
@@ -75,8 +197,8 @@
         </tr>
         </tbody>
     </table>
-    <h2>Total: <span th:text="${totalAmount}">0.00</span></h2>
-    <a class="btn btn-success mt-3" href="/addExpense">Добавить запись</a>
+    <h2>Общая сумма расходов: <span th:text="${totalSpent}">0.00</span></h2>
+    <a class="btn btn-success mt-3" href="/addExpense">Добавить расход</a>
 </div>
 </body>
 </html>

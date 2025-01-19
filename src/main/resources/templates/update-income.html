@@ -26,9 +26,8 @@
 
     <div th:if="${walletError != null && !walletError.isBlank()}" th:text="${walletError}" class="alert alert-warning" role="alert"></div>
     <div th:if="${categoryError != null && !categoryError.isBlank()}" th:text="${categoryError}" class="alert alert-warning" role="alert"></div>
-    <div th:if="${limitWarning != null && !limitWarning.isBlank()}" th:text="${limitWarning}" class="alert alert-warning" role="alert"></div>
 
-    <form action="#" th:action="@{/updateExpense/{id}(id=${expense.id})}" th:object="${expense}" method="post" class="mt-3">
+    <form action="#" th:action="@{/updateIncome/{id}(id=${income.id})}" th:object="${income}" method="post" class="mt-3">
         <div class="form-group">
             <p>Кошелек:</p>
             <div th:each="wallet : ${wallets}" >

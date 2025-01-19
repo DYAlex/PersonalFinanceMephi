@@ -6,9 +6,10 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 @Builder
 @Table(name = "users")
 public class User {
