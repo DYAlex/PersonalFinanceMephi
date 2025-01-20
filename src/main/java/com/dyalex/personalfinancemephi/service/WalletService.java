@@ -6,6 +6,7 @@ import com.dyalex.personalfinancemephi.model.Wallet;
 import com.dyalex.personalfinancemephi.repository.WalletRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,6 +42,7 @@ public class WalletService {
         }
     }
 
+    @Transactional
     public void deleteWalletById(long id) {
         walletRepository.deleteById(id);
     }
@@ -58,7 +60,7 @@ public class WalletService {
                                 .map(Transaction::getAmount)
                                 .reduce(BigDecimal.ZERO, BigDecimal::add))))
                                 .peek(limit -> System.out.println(limit.getBalance()))
-                        .peek(limit -> limit.setInBound(limit.getValue().compareTo(limit.getBalance().abs()) >= 0))
+                        .peek(limit -> limit.setInBound(limit.getValue().compareTo(limit.getBalance()) >= 0))
                                 .peek(limit -> System.out.println(limit.getInBound()))
                         .toList()))
                 .peek(wallet -> wallet.setInBound(wallet.getTransactions().stream()
@@ -68,7 +70,7 @@ public class WalletService {
                         .compareTo(wallet.getTransactions().stream()
                                 .filter(transaction -> transaction.getCategory().getType() == TransactionType.EXPENSE)
                                 .map(Transaction::getAmount)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add).abs()) >= 0)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add)) >= 0)
                 )
                 .collect(Collectors.toList());
     }

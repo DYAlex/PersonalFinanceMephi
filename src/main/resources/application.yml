@@ -18,6 +18,12 @@ spring:
             create-source: metadata
             output-to-script: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
 logging:
   level:
     org:

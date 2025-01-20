@@ -26,7 +26,8 @@
 <div class="container">
     <h1 class="mt-5">Личные финансы</h1>
     <div class="row">
-        <div th:if="${categoriesError != null && !categoriesError.isBlank()}" th:text="${categoriesError}" class="alert alert-warning" role="alert"></div>
+        <div th:if="${categoriesError != null && !categoriesError.isBlank()}" th:text="${categoriesError}"
+             class="alert alert-warning" role="alert"></div>
         <form action="#" th:action="@{/display}" th:object="${financeFilter}" method="POST">
             <div class="container">
                 <div><strong>Выберите кошелек (Multiple):</strong>
@@ -58,22 +59,29 @@
                 <div class="container">
                     <div th:text="${wallet.name}"></div>
                     <div th:text="${wallet.balance}"></div>
-                    <p><a class="btn btn-primary btn-sm" th:href="@{/editWallet/{id}(id=${wallet.id})}">
+                    <a class="btn btn-primary btn-sm" th:href="@{/editWallet/{id}(id=${wallet.id})}">
                         <i class="fas fa-pencil-alt"></i>
                     </a>
-                        <a class="btn btn-danger btn-sm" th:href="@{/deleteWallet/{id}(id=${wallet.id})}"
-                           onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                    <form method="post" th:action="@{/deleteWallet/{id}(id=${wallet.id})}" style='display:inline;'>
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Вы уверены, что хотите удалить запись?');">
                             <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </p>
-                    <div th:if="${wallet.inBound != null && !wallet.inBound}" th:text="'В кошельке ' + ${wallet.name} + ' расходы превышают доходы!'" class="alert alert-warning" role="alert"></div>
+                        </button>
+                    </form>
+
+                    <div th:if="${wallet.inBound != null && !wallet.inBound}"
+                         th:text="'В кошельке ' + ${wallet.name} + ' расходы превышают доходы!'"
+                         class="alert alert-warning" role="alert"></div>
                 </div>
                 <div class="card text-white bg-dark mb-3"
                      th:each=" limit : ${wallet.limits}"
                      th:object="${limit}"
                      th:if="${limit.category.type.name} == 'EXPENSE'">
 
-                    <div th:if="${limit.inBound != null && !limit.inBound}" th:text="'По категории ' + ${limit.category.name} + ' превышен установленный лимит!'" class="alert alert-warning" role="alert"></div>
+                    <div th:if="${limit.inBound != null && !limit.inBound}"
+                         th:text="'По категории ' + ${limit.category.name} + ' превышен установленный лимит!'"
+                         class="alert alert-warning" role="alert"></div>
                     <div class="card-body">
                         <div class="card-text" th:text="${limit.category.name}"></div>
                         <div class="card-text" th:text="'Лимит: ' + ${limit.value}"></div>
@@ -83,10 +91,13 @@
                         <a class="btn btn-primary btn-sm" th:href="@{/editLimit/{id}(id=${limit.id})}">
                             <i class="fas fa-pencil-alt"></i>
                         </a>
-                        <a class="btn btn-danger btn-sm" th:href="@{/deleteLimit/{id}(id=${limit.id})}"
-                           onclick="return confirm('Вы уверены, что хотите удалить запись?');">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
+                        <form method="post" th:action="@{/deleteLimit/{id}(id=${limit.id})}" style='display:inline;'>
+                            <input type="hidden" name="_method" value="DELETE"/>
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -157,10 +168,13 @@
                 <a class="btn btn-primary btn-sm" th:href="@{/editIncome/{id}(id=${inc.id})}">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
-                <a class="btn btn-danger btn-sm" th:href="@{/deleteTransaction/{id}(id=${inc.id})}"
-                   onclick="return confirm('Вы уверены, что хотите удалить запись?');">
-                    <i class="fas fa-trash-alt"></i>
-                </a>
+                <form method="post" th:action="@{/deleteTransaction/{id}(id=${inc.id})}" style='display:inline;'>
+                    <input type="hidden" name="_method" value="DELETE"/>
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
             </td>
         </tr>
         </tbody>
@@ -188,10 +202,13 @@
                 <a class="btn btn-primary btn-sm" th:href="@{/editExpense/{id}(id=${expense.id})}">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
-                <a class="btn btn-danger btn-sm" th:href="@{/deleteTransaction/{id}(id=${expense.id})}"
-                   onclick="return confirm('Вы уверены, что хотите удалить запись?');">
-                    <i class="fas fa-trash-alt"></i>
-                </a>
+                <form method="post" th:action="@{/deleteTransaction/{id}(id=${expense.id})}" style='display:inline;'>
+                    <input type="hidden" name="_method" value="DELETE"/>
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Вы уверены, что хотите удалить запись?');">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </form>
             </td>
         </tr>
         </tbody>

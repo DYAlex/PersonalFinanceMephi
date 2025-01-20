@@ -2,6 +2,7 @@ package com.dyalex.personalfinancemephi.service;
 
 import com.dyalex.personalfinancemephi.model.Limit;
 import com.dyalex.personalfinancemephi.repository.LimitRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class LimitService {
         }
     }
 
+    @Transactional
     public void deleteLimitById(long id) {
         limitRepository.deleteById(id);
     }

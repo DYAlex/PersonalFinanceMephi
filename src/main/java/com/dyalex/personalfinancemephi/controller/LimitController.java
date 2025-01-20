@@ -14,9 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @Controller
@@ -43,34 +41,21 @@ public class LimitController {
     @PostMapping("/saveLimit")
     public String saveLimit(@ModelAttribute("limit") @Valid Limit limit, Model model, Principal principal)
             throws CategoryNotFoundException, WalletNotFoundException {
-        if (limit.getWallet() == null || limit.getCategory() == null) {
-            User user = userService.findByUsername(principal.getName());
-            List<Category> categories = categoryService.getAllCategories(user.getId());
-            List<Wallet> wallets = walletService.getAllWallets(user.getId());
-            if (limit.getWallet() == null) {
-                model.addAttribute("walletError", "You must select a wallet first");
-                model.addAttribute("limit", limit);
-                model.addAttribute("wallets", wallets);
-                model.addAttribute("categories", categories);
-                return "add-limit";
-            }
-            if (limit.getCategory() == null) {
-                model.addAttribute("categoryError", "You must select a category first");
-                model.addAttribute("limit", limit);
-                model.addAttribute("wallets", wallets);
-                model.addAttribute("categories", categories);
-                return "add-limit";
-            }
+        if (limit.getWallet() == null) {
+            model.addAttribute("walletError", "You must select a wallet first");
+            model.addAllAttributes(getModelAttributes(limit, principal));
+            return "add-limit";
         }
+        if (limit.getCategory() == null) {
+            model.addAttribute("categoryError", "You must select a category first");
+            model.addAllAttributes(getModelAttributes(limit, principal));
+            return "add-limit";
+        }
+
         Optional<Limit> limitFromDb = limitService.getLimitByWalletAndCategory(limit.getWallet().getId(), limit.getCategory().getId());
         if (limitFromDb.isPresent()) {
-            User user = userService.findByUsername(principal.getName());
-            List<Category> categories = categoryService.getAllCategories(user.getId());
-            List<Wallet> wallets = walletService.getAllWallets(user.getId());
             model.addAttribute("limitError", "Такой лимит уже существует");
-            model.addAttribute("limit", limit);
-            model.addAttribute("wallets", wallets);
-            model.addAttribute("categories", categories);
+            model.addAllAttributes(getModelAttributes(limit, principal));
             return "add-limit";
         }
         limitService.saveLimit(limit);
@@ -79,47 +64,30 @@ public class LimitController {
 
     @GetMapping("/editLimit/{limitId}")
     public String showUpdateLimitPage(@PathVariable("limitId") long limitId, Model model, Principal principal) {
-        User user = userService.findByUsername(principal.getName());
         Limit limit = limitService.getLimitById(limitId);
-        List<Category> categories = categoryService.getAllCategories(user.getId());
-        List<Wallet> wallets = walletService.getAllWallets(user.getId());
-        model.addAttribute("limit", limit);
-        model.addAttribute("wallets", wallets);
-        model.addAttribute("categories", categories);
+        model.addAllAttributes(getModelAttributes(limit, principal));
+
         return "update-limit";
     }
 
     @PostMapping("/updateLimit/{limitId}")
     public String updateLimit(@PathVariable("limitId") long limitId, @ModelAttribute("limit") @Valid Limit limit, Model model, Principal principal)
             throws CategoryNotFoundException, WalletNotFoundException {
-        if (limit.getWallet() == null || limit.getCategory() == null) {
-            User user = userService.findByUsername(principal.getName());
-            List<Category> categories = categoryService.getAllCategories(user.getId());
-            List<Wallet> wallets = walletService.getAllWallets(user.getId());
-            if (limit.getWallet() == null) {
-                model.addAttribute("walletError", "You must select a wallet first");
-                model.addAttribute("limit", limit);
-                model.addAttribute("wallets", wallets);
-                model.addAttribute("categories", categories);
-                return "update-limit";
-            }
-            if (limit.getCategory() == null) {
-                model.addAttribute("categoryError", "You must select a category first");
-                model.addAttribute("limit", limit);
-                model.addAttribute("wallets", wallets);
-                model.addAttribute("categories", categories);
-                return "update-limit";
-            }
+        if (limit.getWallet() == null) {
+            model.addAttribute("walletError", "You must select a wallet first");
+            model.addAllAttributes(getModelAttributes(limit, principal));
+            return "update-limit";
         }
+        if (limit.getCategory() == null) {
+            model.addAttribute("categoryError", "You must select a category first");
+            model.addAllAttributes(getModelAttributes(limit, principal));
+            return "update-limit";
+        }
+
         Optional<Limit> limitFromDb = limitService.getLimitByWalletAndCategory(limit.getWallet().getId(), limit.getCategory().getId());
         if (limitFromDb.isPresent() && limitFromDb.get().getId() != limitId) {
-            User user = userService.findByUsername(principal.getName());
-            List<Category> categories = categoryService.getAllCategories(user.getId());
-            List<Wallet> wallets = walletService.getAllWallets(user.getId());
             model.addAttribute("limitError", "Такой лимит уже существует");
-            model.addAttribute("limit", limit);
-            model.addAttribute("wallets", wallets);
-            model.addAttribute("categories", categories);
+            model.addAllAttributes(getModelAttributes(limit, principal));
             return "add-limit";
         }
         limitService.updateLimit(limitId, limit);
@@ -130,5 +98,19 @@ public class LimitController {
     public String deleteExpense(@PathVariable("limitId") long limitId) {
         limitService.deleteLimitById(limitId);
         return "redirect:/";
+    }
+
+    private Map<String, ?> getModelAttributes(Limit limit, Principal principal) {
+        Map<String, Object> modelAttributes = new HashMap<>();
+
+        User user = userService.findByUsername(principal.getName());
+        List<Wallet> wallets = walletService.getAllWallets(user.getId());
+        List<Category> categories = categoryService.getAllCategories(user.getId());
+
+        modelAttributes.put("limit", limit);
+        modelAttributes.put("wallets", wallets);
+        modelAttributes.put("categories", categories);
+
+        return modelAttributes;
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -25,34 +27,10 @@ public class FinanceController {
         User user = userService.findByUsername(principal.getName());
 
         List<Wallet> wallets = financeService.getAllWallets(user.getId());
-        List<Transaction> transactions = financeService.getAllTransactions(user.getId());
-        List<Transaction> expenses = transactions.stream()
-                .filter(transaction -> transaction.getCategory().getType() == TransactionType.EXPENSE)
-                .collect(Collectors.toList());
-        List<Transaction> income = transactions.stream()
-                .filter(transaction -> transaction.getCategory().getType() == TransactionType.INCOME)
-                .toList();
-        List<Transaction> other = transactions.stream()
-                .filter(transaction -> transaction.getCategory().getType() == TransactionType.OTHER)
-                .toList();
         List<Category> categories = financeService.getAllCategories(user.getId());
-        BigDecimal balance = wallets.stream().map(Wallet::getBalance).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalSpent = expenses.stream().map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalIncome = income.stream().map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<Transaction> transactions = financeService.getAllTransactions(user.getId());
 
-        FinanceFilter financeFilter = FinanceFilter.builder()
-                .wallets(wallets)
-                .categories(categories)
-                .build();
-        model.addAttribute("financeFilter", financeFilter);
-        model.addAttribute("wallets", wallets);
-        model.addAttribute("categories", categories);
-        model.addAttribute("expenses", expenses);
-        model.addAttribute("income", income);
-        model.addAttribute("otherTransactions", other);
-        model.addAttribute("balance", balance);
-        model.addAttribute("totalSpent", totalSpent);
-        model.addAttribute("totalIncome", totalIncome);
+        model.addAllAttributes(getModelAttributes(wallets, categories, transactions));
 
         return "index";
     }
@@ -65,42 +43,51 @@ public class FinanceController {
         List<Wallet> wallets = financeService.getWalletsByIds(financeFilter.getWallets().stream()
                 .map(Wallet::getId).collect(Collectors.toList()), user.getId());
         List<Category> categories = financeService.getCategoriesByIds(financeFilter.getCategories().stream()
-                        .peek(cat -> System.out.println("Category: " + cat))
                 .map(Category::getId)
-                .peek(catId -> System.out.println("CategoryID: " + catId))
                 .collect(Collectors.toList()), user.getId());
         List<Transaction> transactions = wallets.stream().flatMap(wallet -> wallet.getTransactions().stream()
                 .filter(transaction -> categories.contains(transaction.getCategory())))
                 .toList();
 
-        List<Transaction> expenses = transactions.stream()
-                .filter(transaction -> transaction.getCategory().getType() == TransactionType.EXPENSE)
+        model.addAllAttributes(getModelAttributes(wallets, categories, transactions));
+        return "index";
+    }
+
+    private List<Transaction> filterTransactions(List<Transaction> transactions, TransactionType filter) {
+        return transactions.stream()
+                .filter(transaction -> transaction.getCategory().getType() == filter)
                 .collect(Collectors.toList());
-        List<Transaction> income = transactions.stream()
-                .filter(transaction -> transaction.getCategory().getType() == TransactionType.INCOME)
-                .toList();
-        List<Transaction> other = transactions.stream()
-                .filter(transaction -> transaction.getCategory().getType() == TransactionType.OTHER)
-                .toList();
+    }
+
+    private BigDecimal getTotal(List<Transaction> transactions) {
+        return transactions.stream().map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private Map<String, ?> getModelAttributes(List<Wallet> wallets, List<Category> categories,
+                                              List<Transaction> transactions) {
+        Map<String, Object> modelAttributes = new HashMap<>();
+        List<Transaction> expenses = filterTransactions(transactions, TransactionType.EXPENSE);
+        List<Transaction> income = filterTransactions(transactions, TransactionType.INCOME);
+        List<Transaction> other = filterTransactions(transactions, TransactionType.OTHER);
 
         BigDecimal balance = wallets.stream().map(Wallet::getBalance).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalSpent = expenses.stream().map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalIncome = income.stream().map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalSpent = getTotal(expenses);
+        BigDecimal totalIncome = getTotal(income);
 
-        FinanceFilter refreshFilter = FinanceFilter.builder()
+        FinanceFilter financeFilter = FinanceFilter.builder()
                 .wallets(wallets)
                 .categories(categories)
                 .build();
 
-        model.addAttribute("financeFilter", refreshFilter);
-        model.addAttribute("wallets", wallets);
-        model.addAttribute("categories", categories);
-        model.addAttribute("expenses", expenses);
-        model.addAttribute("income", income);
-        model.addAttribute("otherTransactions", other);
-        model.addAttribute("balance", balance);
-        model.addAttribute("totalSpent", totalSpent);
-        model.addAttribute("totalIncome", totalIncome);
-        return "index";
+        modelAttributes.put("financeFilter", financeFilter);
+        modelAttributes.put("wallets", wallets);
+        modelAttributes.put("categories", categories);
+        modelAttributes.put("expenses", expenses);
+        modelAttributes.put("income", income);
+        modelAttributes.put("otherTransactions", other);
+        modelAttributes.put("balance", balance);
+        modelAttributes.put("totalSpent", totalSpent);
+        modelAttributes.put("totalIncome", totalIncome);
+        return modelAttributes;
     }
 }
