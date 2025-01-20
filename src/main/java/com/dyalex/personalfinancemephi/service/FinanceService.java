@@ -2,7 +2,6 @@ package com.dyalex.personalfinancemephi.service;
 
 import com.dyalex.personalfinancemephi.model.Category;
 import com.dyalex.personalfinancemephi.model.Transaction;
-import com.dyalex.personalfinancemephi.model.TransactionType;
 import com.dyalex.personalfinancemephi.model.Wallet;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,9 +33,5 @@ public class FinanceService {
 
     public List<Category> getCategoriesByIds(List<Long> categoryIds, Long userId) {
         return categoryService.getCategoriesByIds(userId, categoryIds);
-    }
-
-    public List<Transaction> getTransactionsByType(Long userId, TransactionType transactionType) {
-        return transactionService.getTransactionsByType(userId, transactionType);
     }
 }

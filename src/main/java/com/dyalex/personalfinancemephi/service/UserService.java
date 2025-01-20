@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -34,15 +33,6 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
     }
 
-    public User findUserById(Long userId) {
-        Optional<User> userFromDb = userRepository.findById(userId);
-        return userFromDb.orElse(new User());
-    }
-
-    public List<User> allUsers() {
-        return userRepository.findAll();
-    }
-
     public boolean saveUser(User user) {
         Optional<User> userFromDB = userRepository.findByUsername(user.getUsername());
 
@@ -54,13 +44,5 @@ public class UserService implements UserDetailsService {
         user.setPassword(BCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return true;
-    }
-
-    public boolean deleteUser(Long userId) {
-        if (userRepository.findById(userId).isPresent()) {
-            userRepository.deleteById(userId);
-            return true;
-        }
-        return false;
     }
 }

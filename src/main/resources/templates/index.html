@@ -40,7 +40,6 @@
                     <select id="multiple-categories" th:field="${financeFilter.categories}" multiple="multiple">
                         <option th:each="category : ${categories}"
                                 th:value="${category.id}" th:text="${category.name}"></option>
-                        <option value="7" th:text="'test category'"></option>
                     </select>
                 </div>
                 <input type="submit" value="Фильтровать" class="btn btn-primary"/>

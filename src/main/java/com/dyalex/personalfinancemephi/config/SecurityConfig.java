@@ -1,7 +1,7 @@
 package com.dyalex.personalfinancemephi.config;
 
 import com.dyalex.personalfinancemephi.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,9 +21,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@AllArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
     private UserService userService;
 
     private static final List<String> ALLOWED_URL_PATTERNS

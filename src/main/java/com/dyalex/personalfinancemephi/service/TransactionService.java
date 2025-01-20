@@ -4,7 +4,6 @@ import com.dyalex.personalfinancemephi.model.Category;
 import com.dyalex.personalfinancemephi.model.Transaction;
 import com.dyalex.personalfinancemephi.model.TransactionType;
 import com.dyalex.personalfinancemephi.model.Wallet;
-import com.dyalex.personalfinancemephi.repository.CategoryRepository;
 import com.dyalex.personalfinancemephi.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class TransactionService {
-    private final CategoryRepository categoryRepository;
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
 
@@ -119,10 +117,5 @@ public class TransactionService {
                 walletService.saveWallet(wallet);
             }
         }
-    }
-
-    public List<Transaction> getTransactionsByType(Long userId, TransactionType transactionType) {
-        List<Category> categories = categoryRepository.findAllByUserIdAndType(userId, transactionType);
-        return transactionRepository.findAllByCategoryIsIn(categories);
     }
 }
